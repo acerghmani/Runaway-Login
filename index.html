@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Attendance Calculator</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        background: #f4f7fb;
+        color: #222;
+    }
+
+    .header {
+        background: #1e3a8a;
+        color: white;
+        padding: 25px;
+        text-align: center;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .header p {
+        margin: 8px 0 0;
+        opacity: 0.9;
+    }
+
+    .container {
+        max-width: 1100px;
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    .card {
+        background: white;
+        padding: 22px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+        margin-top: 0;
+        color: #1e3a8a;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    input {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        font-size: 15px;
+    }
+
+    button {
+        border: none;
+        padding: 11px 18px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    .add-btn {
+        background: #2563eb;
+        color: white;
+        margin-top: 20px;
+    }
+
+    .add-btn:hover {
+        background: #1d4ed8;
+    }
+
+    .export-btn {
+        background: #16a34a;
+        color: white;
+        margin-bottom: 15px;
+    }
+
+    .delete-btn {
+        background: #dc2626;
+        color: white;
+        padding: 7px 12px;
+    }
+
+    .summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .summary-box {
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        color: white;
+    }
+
+    .summary-box h3 {
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .summary-box p {
+        margin: 5px 0 0;
+    }
+
+    .blue {
+        background: #2563eb;
+    }
+
+    .green {
+        background: #16a34a;
+    }
+
+    .red {
+        background: #dc2626;
+    }
+
+    .orange {
+        background: #ea580c;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th {
+        background: #1e3a8a;
+        color: white;
+        padding: 12px;
+    }
+
+    td {
+        padding: 11px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+        background: #f1f5f9;
+    }
+
+    .eligible {
+        color: #15803d;
+        font-weight: bold;
+    }
+
+    .not-eligible {
+        color: #dc2626;
+        font-weight: bold;
+    }
+
+    .percentage {
+        font-weight: bold;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+
+    @media(max-width: 800px) {
+        .form-grid,
+        .summary {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media(max-width: 500px) {
+        .form-grid,
+        .summary {
+            grid-template-columns: 1fr;
+        }
+
+        table {
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 7px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Student Attendance Calculator</h1>
+    <p>Present / Absent Based Attendance Management System</p>
+</div>
+
+<div class="container">
+
+    <!-- ADD STUDENT -->
+    <div class="card">
+
+        <h2>Add Student Attendance</h2>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Register Number</label>
+                <input type="text" id="regNo" placeholder="Enter Register No">
+            </div>
+
+            <div>
+                <label>Student Name</label>
+                <input type="text" id="studentName" placeholder="Enter Student Name">
+            </div>
+
+            <div>
+                <label>Total Working Days</label>
+                <input type="number" id="totalDays" min="0" placeholder="Example: 100">
+            </div>
+
+            <div>
+                <label>Present Days</label>
+                <input type="number" id="presentDays" min="0" placeholder="Example: 80">
+            </div>
+
+        </div>
+
+        <button class="add-btn" onclick="addStudent()">
+            + Add Student
+        </button>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="card">
+
+        <h2>Attendance Summary</h2>
+
+        <div class="summary">
+
+            <div class="summary-box blue">
+                <h3 id="studentCount">0</h3>
+                <p>Total Students</p>
+            </div>
+
+            <div class="summary-box green">
+                <h3 id="eligibleCount">0</h3>
+                <p>75% Eligible</p>
+            </div>
+
+            <div class="summary-box red">
+                <h3 id="notEligibleCount">0</h3>
+                <p>Below 75%</p>
+            </div>
+
+            <div class="summary-box orange">
+                <h3 id="averageAttendance">0%</h3>
+                <p>Average Attendance</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="card">
+
+        <h2>Student Attendance List</h2>
+
+        <button class="export-btn" onclick="exportCSV()">
+            Export CSV
+        </button>
+
+        <table id="attendanceTable">
+
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Register No</th>
+                    <th>Student Name</th>
+                    <th>Total Days</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Attendance %</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="studentTableBody">
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="footer">
+    Attendance Management System © 2026
+</div>
+
+
+<script>
+
+let students = [];
+
+
+/* ADD STUDENT */
+
+function addStudent() {
+
+    let regNo = document.getElementById("regNo").value.trim();
+    let name = document.getElementById("studentName").value.trim();
+
+    let total = parseInt(document.getElementById("totalDays").value);
+    let present = parseInt(document.getElementById("presentDays").value);
+
+    if (!regNo || !name || isNaN(total) || isNaN(present)) {
+        alert("Please enter all details.");
+        return;
+    }
+
+    if (total <= 0) {
+        alert("Total working days must be greater than 0.");
+        return;
+    }
+
+    if (present < 0 || present > total) {
+        alert("Present days cannot be greater than total working days.");
+        return;
+    }
+
+    let absent = total - present;
+
+    let percentage = (present / total) * 100;
+
+    let student = {
+        regNo: regNo,
+        name: name,
+        total: total,
+        present: present,
+        absent: absent,
+        percentage: percentage
+    };
+
+    students.push(student);
+
+    displayStudents();
+
+    clearForm();
+}
+
+
+/* DISPLAY STUDENTS */
+
+function displayStudents() {
+
+    let tbody = document.getElementById("studentTableBody");
+
+    tbody.innerHTML = "";
+
+    students.forEach((student, index) => {
+
+        let status;
+        let statusClass;
+
+        if (student.percentage >= 75) {
+            status = "Eligible";
+            statusClass = "eligible";
+        } else {
+            status = "Not Eligible";
+            statusClass = "not-eligible";
+        }
+
+        let row = `
+            <tr>
+
+                <td>${index + 1}</td>
+
+                <td>${student.regNo}</td>
+
+                <td>${student.name}</td>
+
+                <td>${student.total}</td>
+
+                <td>${student.present}</td>
+
+                <td>${student.absent}</td>
+
+                <td class="percentage">
+                    ${student.percentage.toFixed(2)}%
+                </td>
+
+                <td class="${statusClass}">
+                    ${status}
+                </td>
+
+                <td>
+                    <button 
+                        class="delete-btn"
+                        onclick="deleteStudent(${index})">
+                        Delete
+                    </button>
+                </td>
+
+            </tr>
+        `;
+
+        tbody.innerHTML += row;
+
+    });
+
+    updateSummary();
+}
+
+
+/* DELETE */
+
+function deleteStudent(index) {
+
+    if (confirm("Delete this student?")) {
+
+        students.splice(index, 1);
+
+        displayStudents();
+
+    }
+
+}
+
+
+/* CLEAR FORM */
+
+function clearForm() {
+
+    document.getElementById("regNo").value = "";
+    document.getElementById("studentName").value = "";
+    document.getElementById("totalDays").value = "";
+    document.getElementById("presentDays").value = "";
+
+}
+
+
+/* SUMMARY */
+
+function updateSummary() {
+
+    let totalStudents = students.length;
+
+    let eligible = students.filter(
+        student => student.percentage >= 75
+    ).length;
+
+    let notEligible = students.filter(
+        student => student.percentage < 75
+    ).length;
+
+    let average = 0;
+
+    if (totalStudents > 0) {
+
+        let totalPercentage = students.reduce(
+            (sum, student) => sum + student.percentage,
+            0
+        );
+
+        average = totalPercentage / totalStudents;
+
+    }
+
+    document.getElementById("studentCount").innerText =
+        totalStudents;
+
+    document.getElementById("eligibleCount").innerText =
+        eligible;
+
+    document.getElementById("notEligibleCount").innerText =
+        notEligible;
+
+    document.getElementById("averageAttendance").innerText =
+        average.toFixed(2) + "%";
+
+}
+
+
+/* EXPORT CSV */
+
+function exportCSV() {
+
+    if (students.length === 0) {
+        alert("No attendance data available.");
+        return;
+    }
+
+    let csv = "S.No,Register No,Student Name,Total Days,Present,Absent,Attendance %,Status\n";
+
+    students.forEach((student, index) => {
+
+        let status =
+            student.percentage >= 75
+            ? "Eligible"
+            : "Not Eligible";
+
+        csv += `${index + 1},${student.regNo},${student.name},${student.total},${student.present},${student.absent},${student.percentage.toFixed(2)}%,${status}\n`;
+
+    });
+
+    let blob = new Blob([csv], {
+        type: "text/csv"
+    });
+
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement("a");
+
+    a.href = url;
+    a.download = "attendance_report.csv";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+}
+
+</script>
+
+</body>
+</html>

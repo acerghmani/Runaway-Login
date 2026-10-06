@@ -1,0 +1,15 @@
+/* the plate is DEEPER than the
+room, so the socket has a
+silhouette to cut — and the
+rim draws the meniscus */
+
+.dock__fill {
+  fill: url(#...);
+  stroke: url(#...);
+}
+
+/* one accent tone, 14.7:1 */
+
+.tab__label {
+  color: var(--acc);
+}
